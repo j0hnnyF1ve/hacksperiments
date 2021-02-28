@@ -1,0 +1,13 @@
+.App {
+  text-align: center;
+  width: 100vw;
+  height: 100vw;
+  background-color: #ccc;
+}
+
+.Block {
+  position: absolute;
+  border: solid 1px #000;
+  width: 200px;
+  height: 200px;
+}
