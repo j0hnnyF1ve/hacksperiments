@@ -1,27 +1,64 @@
 import './App.css';
 
 import { useState } from 'react';
-import Block from './components/Block';
 import Page from './components/Page';
 
-const map = new Map();
-map.set("Block1", {
-  id: "Block1",
-  x: Math.floor(Math.random() * 100),
-  y: Math.floor(Math.random() * 100),
-  bgColor: "red"
-});
-map.set("Block2", {
-  id: "Block2",
-  x: Math.floor(Math.random() * 100),
-  y: Math.floor(Math.random() * 100),
-  bgColor: "blue"
-});
+/*
+Page
+  Panel
+    Block
+  Block
+*/
+
+const random = size => Math.floor(Math.random() * size);
+
+const createPage = ({ 
+  id='Page' + random(100000), 
+  x=0, 
+  y=0, 
+  width=800, 
+  height=600, 
+  bgColor,
+  children=[] }) => 
+  ({ id, x, y, width, height, children});
+
+const createPanel = ({ 
+  id='Panel' + random(100000), 
+  x=random(100), 
+  y=random(100), 
+  width=200, 
+  height=200, 
+  bgColor,
+  children=[] }) => 
+  ({ id, x, y, width, height, children });
+
+const createBlock = ({ 
+  id='Block' + random(100000), 
+  x=random(100), 
+  y=random(100), 
+  width=100, 
+  height=100, 
+  bgColor }) => 
+  ({ id, x, y, width, height });
+  
+
+const initialPageState = {
+  page: createPage({ 
+    id: "Page1",
+    width: 600,
+    height: 400,
+    children: [
+      createPanel({ children: [ createBlock({ bgColor: 'red'}) ]}),
+      createBlock({ bgColor: 'blue'})
+    ]
+  })
+};
+
 
 let curId = null;
 
 function App() {
-  const [Blocks, setBlocks] = useState(map);
+  const [PageState, setPageState] = useState(initialPageState);
 
   const mouseDownHandler = (e) => {
     if(e.target == null || e.target.id == null || e.target.id.length === 0) return;
@@ -34,13 +71,6 @@ function App() {
     const { clientX, clientY  } = e;
     const { offsetWidth, offsetHeight } = e.target;
 
-    map.set(curId, { 
-      ...map.get(curId),
-      x: clientX - (offsetWidth / 4),
-      y: clientY - (offsetHeight / 4)
-    } );
-
-    setBlocks(new Map(map) );
   };
 
   const mouseUpHandler = (e) => {
@@ -54,11 +84,7 @@ function App() {
       onMouseUp={mouseUpHandler}
       onDragStart={e => e.preventDefault() }
     >
-      <Page id="Page" key="Page" >
-        { 
-        Array.from(Blocks.entries() ).map( ([key, { id, x, y, bgColor }]) =>
-        <Block key={key} id={id} x={x} y={y} bgColor={bgColor} />)
-        }
+      <Page id="Page" key="Page" state={PageState}>
       </Page>
     </div>
   );

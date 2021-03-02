@@ -12,9 +12,16 @@
   height: 600px;
 }
 
-.Block {
+.Panel {
   position: absolute;
   border: solid 1px #000;
   width: 200px;
   height: 200px;
+}
+
+.Block {
+  position: absolute;
+  border: solid 1px #000;
+  width: 100px;
+  height: 100px;
 }
