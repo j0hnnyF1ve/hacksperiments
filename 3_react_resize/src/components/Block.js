@@ -12,6 +12,8 @@ export default function Block({ id,
     height
   };
 
+  console.log("Block", style);
+
   return <div id={id} className="Block" style={style} draggable="true">
   </div>
 };

@@ -30,6 +30,9 @@ const initialResizeControlPos = {
 };
 
 let isDrag = false;
+let isResize = false;
+let startX = 0;
+let startY = 0;
 
 function App() {
   const [curId, setCurId] = useState(null);
@@ -39,6 +42,7 @@ function App() {
   const [Blocks, setBlocks] = useState(blockMap);
 
   const mouseDownHandler = (e) => {
+    e.preventDefault();
 
     if(e.target.className === "Block") {
 
@@ -47,25 +51,84 @@ function App() {
       setHideResizeControls(true);
       isDrag = true;
     } 
+    else if(e.target.className === "ResizeControl") {
+      console.log(e.target, e.target.dataset.type);
+      const { clientX, clientY  } = e;
+
+      startX = clientX;
+      startY = clientY; 
+      isResize = true;
+    }
+    else {
+      setHideResizeControls(true);
+    }
+
   };
 
   const mouseMoveHandler = (e) => {
-    if(isDrag === false) return;
+    e.preventDefault();
 
     const { clientX, clientY  } = e;
-    const { offsetWidth, offsetHeight } = e.target;
 
-    blockMap.set(curId, { 
-      ...blockMap.get(curId),
-      x: clientX - (offsetWidth / 4),
-      y: clientY - (offsetHeight / 4)
-    } );
+    if(isResize === true && curId != null) {
+      if(e.target.className === "ResizeControl") {
+        let diffX = clientX - startX;
+        let diffY = clientY - startY;
+        console.log(clientX - startX, clientY - startY);
 
-    setBlocks(new Map(blockMap) );
+        let { x, y, width, height } = blockMap.get(curId);
+
+        switch(e.target.dataset.type) {
+          case "UL":
+            blockMap.set(curId, { 
+              ...blockMap.get(curId),
+            } );    
+            break;
+          case "LL":
+            blockMap.set(curId, { 
+              ...blockMap.get(curId),
+            } );    
+            break;
+          case "UR":
+            blockMap.set(curId, { 
+              ...blockMap.get(curId),
+            } );    
+            break;
+          case "LR":
+            console.log(blockMap.get(curId), width, diffX);
+
+            blockMap.set(curId, { 
+              ...blockMap.get(curId),
+              width: width*1 + diffX,
+              height: height*1 + diffY
+            } );    
+            break;
+          default: break;
+        }
+        setBlocks(new Map(blockMap) );
+  
+        return;
+      }
+    }
+    else if(isDrag === true) {
+      const { offsetWidth, offsetHeight } = e.target;
+      
+      blockMap.set(curId, { 
+        ...blockMap.get(curId),
+        x: clientX - (offsetWidth / 4),
+        y: clientY - (offsetHeight / 4)
+      } );
+  
+      setBlocks(new Map(blockMap) );
+      return;
+    }
   };
 
   const mouseUpHandler = (e) => {
+    e.preventDefault();
+    console.log("mouseUp");
     isDrag = false;
+    isResize = false;
 
     if(curId == null) return;
 
@@ -78,10 +141,15 @@ function App() {
       "UR": { x: x*1 + width - halfResizeBox, y: y - halfResizeBox },
       "LR": { x: x*1 + width - halfResizeBox, y: y*1 + height - halfResizeBox }
     });
-    setHideResizeControls(false);
+
+    if(["Block", "ResizeControl"].includes(e.target.className)) {
+      setHideResizeControls(false);
+    }
   };
 
   const resizeHandler = (id, type) => (e) => {
+    console.log("resizeHandler", id, type, e);
+
     switch(type) {
 
       default:
