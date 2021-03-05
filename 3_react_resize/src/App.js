@@ -31,8 +31,10 @@ const initialResizeControlPos = {
 
 let isDrag = false;
 let isResize = false;
+let resizeType = '';
 let startX = 0;
 let startY = 0;
+const HALFRESIZEBOX = 10 / 2;
 
 function App() {
   const [curId, setCurId] = useState(null);
@@ -52,17 +54,23 @@ function App() {
       isDrag = true;
     } 
     else if(e.target.className === "ResizeControl") {
-      console.log(e.target, e.target.dataset.type);
       const { clientX, clientY  } = e;
 
       startX = clientX;
       startY = clientY; 
       isResize = true;
+      resizeType = e.target.dataset.type;
+
+      const { width, height } = blockMap.get(curId);
+      blockMap.set(curId, {
+        ...blockMap.get(curId),
+        startWidth: width,
+        startHeight: height
+      });
     }
     else {
       setHideResizeControls(true);
     }
-
   };
 
   const mouseMoveHandler = (e) => {
@@ -71,44 +79,49 @@ function App() {
     const { clientX, clientY  } = e;
 
     if(isResize === true && curId != null) {
-      if(e.target.className === "ResizeControl") {
-        let diffX = clientX - startX;
-        let diffY = clientY - startY;
-        console.log(clientX - startX, clientY - startY);
+      let diffX = clientX - startX;
+      let diffY = clientY - startY;
 
-        let { x, y, width, height } = blockMap.get(curId);
+      let { x, y, width, height } = blockMap.get(curId);
 
-        switch(e.target.dataset.type) {
-          case "UL":
-            blockMap.set(curId, { 
-              ...blockMap.get(curId),
-            } );    
-            break;
-          case "LL":
-            blockMap.set(curId, { 
-              ...blockMap.get(curId),
-            } );    
-            break;
-          case "UR":
-            blockMap.set(curId, { 
-              ...blockMap.get(curId),
-            } );    
-            break;
-          case "LR":
-            console.log(blockMap.get(curId), width, diffX);
+      switch(resizeType) {
+        // case "UL":
+        //   blockMap.set(curId, { 
+        //     ...blockMap.get(curId),
+        //   } );    
+        //   break;
+        // case "LL":
+        //   blockMap.set(curId, { 
+        //     ...blockMap.get(curId),
+        //   } );    
+        //   break;
+        // case "UR":
+        //   blockMap.set(curId, { 
+        //     ...blockMap.get(curId),
+        //   } );    
+        //   break;
+        case "LR":
 
-            blockMap.set(curId, { 
-              ...blockMap.get(curId),
-              width: width*1 + diffX,
-              height: height*1 + diffY
-            } );    
-            break;
-          default: break;
-        }
-        setBlocks(new Map(blockMap) );
-  
-        return;
+          const { startWidth, startHeight } = blockMap.get(curId);
+          blockMap.set(curId, { 
+            ...blockMap.get(curId),
+            width: (startWidth*1 + diffX > 50) ? startWidth*1 + diffX : 50,
+            height: (startHeight*1 + diffY > 50) ? startHeight*1 + diffY : 50
+          } );    
+
+
+          setResizeControlPos({ ...resizeControlPos, 
+            "LL": { x: resizeControlPos["LL"].x, y: clientY - HALFRESIZEBOX },
+            "UR": { x: clientX - HALFRESIZEBOX, y: resizeControlPos["UR"].y },
+            "LR": { x: clientX - HALFRESIZEBOX, y: clientY - HALFRESIZEBOX } 
+          });
+          break;
+        default: break;
       }
+
+      setBlocks(new Map(blockMap) );
+
+      return;
     }
     else if(isDrag === true) {
       const { offsetWidth, offsetHeight } = e.target;
@@ -126,7 +139,7 @@ function App() {
 
   const mouseUpHandler = (e) => {
     e.preventDefault();
-    console.log("mouseUp");
+
     isDrag = false;
     isResize = false;
 
@@ -134,27 +147,15 @@ function App() {
 
     let { x, y, width, height } = blockMap.get(curId);
 
-    const halfResizeBox = 10 / 2;
     setResizeControlPos({
-      "UL": { x: x - halfResizeBox, y: y - halfResizeBox },
-      "LL": { x: x - halfResizeBox, y: y*1 + height - halfResizeBox },
-      "UR": { x: x*1 + width - halfResizeBox, y: y - halfResizeBox },
-      "LR": { x: x*1 + width - halfResizeBox, y: y*1 + height - halfResizeBox }
+      "UL": { x: x - HALFRESIZEBOX, y: y - HALFRESIZEBOX },
+      "LL": { x: x - HALFRESIZEBOX, y: y*1 + height - HALFRESIZEBOX },
+      "UR": { x: x*1 + width - HALFRESIZEBOX, y: y - HALFRESIZEBOX },
+      "LR": { x: x*1 + width - HALFRESIZEBOX, y: y*1 + height - HALFRESIZEBOX }
     });
 
     if(["Block", "ResizeControl"].includes(e.target.className)) {
       setHideResizeControls(false);
-    }
-  };
-
-  const resizeHandler = (id, type) => (e) => {
-    console.log("resizeHandler", id, type, e);
-
-    switch(type) {
-
-      default:
-        console.log(id, type);
-        break;
     }
   };
 
@@ -167,13 +168,13 @@ function App() {
     >
       <div>{curId}</div>
       { 
-      Array.from(Blocks.entries() ).map( ([key, { id, x, y, bgColor }]) =>
-       <Block key={key} id={id} x={x} y={y} bgColor={bgColor} />)
+      Array.from(Blocks.entries() ).map( ([key, { id, x, y, width, height, bgColor }]) =>
+       <Block key={key} id={id} x={x} y={y} width={width} height={height} bgColor={bgColor} />)
       }
 
       {
         Object.entries(resizeControlPos).map( ([key, {x, y}]) => 
-          <ResizeControl hide={hideResizeControls} key={key} resizeHandler={resizeHandler(curId, key)} target={curId} type={key} x={x} y={y} />
+          <ResizeControl hide={hideResizeControls} key={key} target={curId} type={key} x={x} y={y} />
         )
       }
 

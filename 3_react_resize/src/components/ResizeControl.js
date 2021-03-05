@@ -1,6 +1,5 @@
 export default function ResizeControl({
   hide=true,
-  resizeHandler,
   x,
   y,
   type
@@ -13,6 +12,6 @@ export default function ResizeControl({
     top: y
   }
 
-  return <div className={className} style={style} onClick={resizeHandler} data-type={type}>
+  return <div className={className} style={style} data-type={type}>
   </div>
 };
