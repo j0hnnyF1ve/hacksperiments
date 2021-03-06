@@ -230,7 +230,7 @@ function App() {
 
       {
         Object.entries(resizeControlPos).map( ([key, {x, y}]) => 
-          <ResizeControl hide={hideResizeControls} key={key} target={curId} type={key} x={x} y={y} />
+          <ResizeControl hide={hideResizeControls} key={key} type={key} x={x} y={y} />
         )
       }
 
