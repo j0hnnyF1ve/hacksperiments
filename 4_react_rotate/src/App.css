@@ -1,0 +1,31 @@
+.App {
+  text-align: center;
+  width: 100vw;
+  height: 100vw;
+  background-color: #ccc;
+}
+
+.Block {
+  position: absolute;
+  border: solid 1px #000;
+  width: 200px;
+  height: 200px;
+}
+
+.ResizeControl {
+  position: absolute;
+  background-color: green;
+  border: solid 1px #000;
+  width: 10px;
+  height: 10px;
+}
+
+.RotateControl {
+  position: absolute;
+  background-color: red;
+  border: solid 1px #000;
+  width: 10px;
+  height: 10px;
+}
+
+.hide { display: none; }
