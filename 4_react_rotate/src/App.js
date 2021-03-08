@@ -193,8 +193,6 @@ function App() {
         rotate: diffX % 360
       } );   
 
-      console.log(blockMap);
-
       setBlocks(new Map(blockMap) );
     }
     else if(isDrag === true) {
@@ -226,7 +224,7 @@ function App() {
 
     if(curId == null) return;
 
-    let { x, y, width, height } = blockMap.get(curId);
+    let { x, y, width, height, rotate } = blockMap.get(curId);
 
     setResizeControlPos({
       "UL": { x: x - HALFRESIZEBOX, y: y - HALFRESIZEBOX },
@@ -235,7 +233,23 @@ function App() {
       "LR": { x: x*1 + width - HALFRESIZEBOX, y: y*1 + height - HALFRESIZEBOX }
     });
 
-    setRotateControlPos({ x: x*1 + (width / 2) - HALFRESIZEBOX, y: y*1 + height - HALFRESIZEBOX + 40 });
+    const radians = Math.PI * rotate / 180;
+
+    let newX = x*1 + (Math.sin(radians) * x) + (width / 2) - HALFRESIZEBOX;
+    let newY = y*1 + (Math.cos(radians) * y) + (height ) - HALFRESIZEBOX;
+
+    console.log(`degrees=${rotate}`, 
+      `radians=${radians}`, 
+      `sin=${Math.sin(radians)}`, 
+      `cos=${Math.cos(radians)}`, 
+      `x=${x}`, 
+      `y=${y}`,
+      `newX=${newX}`,
+      `newY=${newY}`
+    );
+
+    setRotateControlPos({ x:  newX, y: newY });
+    // setRotateControlPos({ x: x*1 + (width / 2) - HALFRESIZEBOX, y: y*1 + height - HALFRESIZEBOX + 40 });
 
     if(["Block", "ResizeControl", "RotateControl"].includes(e.target.className)) {
       setHideResizeControls(false);
