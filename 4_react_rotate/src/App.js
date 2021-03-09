@@ -235,8 +235,39 @@ function App() {
 
     const radians = Math.PI * rotate / 180;
 
-    let newX = x*1 + (Math.sin(radians) * x) + (width / 2) - HALFRESIZEBOX;
-    let newY = y*1 + (Math.cos(radians) * y) + (height ) - HALFRESIZEBOX;
+    // let newX = x*1 + (Math.sin(radians) * x) + (width / 2) - HALFRESIZEBOX;
+    // let newY = y*1 + (Math.cos(radians) * y) + (height ) - HALFRESIZEBOX;
+
+    /*
+    midpoint=(100, 100)
+    0 degrees=(100, 200)
+    90 degrees=(0, 100)
+    180 degrees=(100, 0)
+    270 degrees=(200, 100)-
+    */
+
+    // 0 degrees - width / 2, height
+    // 90 degrees - 0, height / 2
+    // 180 degrees - width / 2, 0
+    // 270 degrees - width, height / 2
+
+    /*
+      degrees=0, sin=0, cos=1 
+      degrees=45, sin=0.7071067811865475, cos=0.7071067811865476 
+      degrees=90, sin=1, cos=6.123233995736766e-17 
+      degrees=135, sin=0.7071067811865476, cos=-0.7071067811865475 
+      degrees=180, sin=1.2246467991473532e-16, cos=-1 
+      degrees=225, sin=-0.7071067811865475, cos=-0.7071067811865477 
+      degrees=270, sin=-1, cos=-1.8369701987210297e-16 
+      degrees=315, sin=-0.7071067811865477, cos=0.7071067811865474 
+      degrees=360, sin=-2.4492935982947064e-16, cos=1
+
+
+    */
+
+
+    let newX = x*1 + (width / 2) - HALFRESIZEBOX;
+    let newY = y*1 + (height / 2) - HALFRESIZEBOX;
 
     console.log(`degrees=${rotate}`, 
       `radians=${radians}`, 
