@@ -16,8 +16,6 @@ const createNode = ({ id, left=250, top=250, width=10, height=10, bgColor='green
 }
 
 let degrees = 0;
-
-
 /*
   0 degrees: 250 300
   90 degrees: 200 250
