@@ -1,6 +1,6 @@
 import './App.css';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Block from './components/Block';
 import ResizeControl from './components/ResizeControl';
 import RotateControl from './components/RotateControl';
@@ -51,6 +51,11 @@ function App() {
   const [resizeControlPos, setResizeControlPos] = useState(initialResizeControlPos)
   const [rotateControlPos, setRotateControlPos] = useState(initialRotateControlPos)
   const [Blocks, setBlocks] = useState(blockMap);
+
+  useEffect( () => {
+    const { UL, LL, UR, LR } = resizeControlPos;
+    console.log("useEffect", resizeControlPos, UL, LL, UR, LR);
+  }, [resizeControlPos]);
 
   const mouseDownHandler = (e) => {
     e.preventDefault();
@@ -226,14 +231,42 @@ function App() {
 
     let { x, y, width, height, rotate } = blockMap.get(curId);
 
+    const radians = Math.PI * rotate / 180;
+    const sin = Math.sin(radians);
+    const cos = Math.cos(radians);
+
+    const midpoint = { x: x*1 + (width / 2) - HALFRESIZEBOX, y: y*1 + (height / 2) - HALFRESIZEBOX };
+    const half = { width: width/2, height: height/2 };
+
+    console.log(rotate, midpoint, x, y);
+
+
     setResizeControlPos({
-      "UL": { x: x - HALFRESIZEBOX, y: y - HALFRESIZEBOX },
-      "LL": { x: x - HALFRESIZEBOX, y: y*1 + height - HALFRESIZEBOX },
-      "UR": { x: x*1 + width - HALFRESIZEBOX, y: y - HALFRESIZEBOX },
-      "LR": { x: x*1 + width - HALFRESIZEBOX, y: y*1 + height - HALFRESIZEBOX }
+      "UL": { x: midpoint.x - half.width, y: midpoint.y - half.height },
+      "LL": { x: midpoint.x - half.width, y: midpoint.y + half.height },
+      "UR": { x: midpoint.x + half.width, y: midpoint.y - half.height },
+      "LR": { x: midpoint.x + half.width, y: midpoint.y + half.height }
+
+      // "UL": { x: x - HALFRESIZEBOX, y: y - HALFRESIZEBOX },
+      // "LL": { x: x - HALFRESIZEBOX, y: y*1 + height - HALFRESIZEBOX },
+      // "UR": { x: x*1 + width - HALFRESIZEBOX, y: y - HALFRESIZEBOX },
+      // "LR": { x: x*1 + width - HALFRESIZEBOX, y: y*1 + height - HALFRESIZEBOX }
     });
 
-    const radians = Math.PI * rotate / 180;
+    
+    let newX = midpoint.x;
+    let newY = midpoint.y;
+
+    console.log(`degrees=${rotate}`, 
+      `radians=${radians}`, 
+      `sin=${Math.sin(radians)}`, 
+      `cos=${Math.cos(radians)}`, 
+      `x=${x}`, 
+      `y=${y}`,
+      `newX=${newX}`,
+      `newY=${newY}`
+    );
+
 
     // let newX = x*1 + (Math.sin(radians) * x) + (width / 2) - HALFRESIZEBOX;
     // let newY = y*1 + (Math.cos(radians) * y) + (height ) - HALFRESIZEBOX;
@@ -261,23 +294,8 @@ function App() {
       degrees=270, sin=-1, cos=-1.8369701987210297e-16 
       degrees=315, sin=-0.7071067811865477, cos=0.7071067811865474 
       degrees=360, sin=-2.4492935982947064e-16, cos=1
-
-
     */
 
-
-    let newX = x*1 + (width / 2) - HALFRESIZEBOX;
-    let newY = y*1 + (height / 2) - HALFRESIZEBOX;
-
-    console.log(`degrees=${rotate}`, 
-      `radians=${radians}`, 
-      `sin=${Math.sin(radians)}`, 
-      `cos=${Math.cos(radians)}`, 
-      `x=${x}`, 
-      `y=${y}`,
-      `newX=${newX}`,
-      `newY=${newY}`
-    );
 
     setRotateControlPos({ x:  newX, y: newY });
     // setRotateControlPos({ x: x*1 + (width / 2) - HALFRESIZEBOX, y: y*1 + height - HALFRESIZEBOX + 40 });
