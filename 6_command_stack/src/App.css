@@ -1,0 +1,47 @@
+.App {
+  text-align: center;
+  background-color: #999;
+  width: 100vw;
+  height: 100vh;
+}
+
+.Block {
+  position: absolute;
+  border: solid 1px #000;
+  width: 200px;
+  height: 200px;
+}
+
+.hide { display: none; }
+
+header { 
+  height: 10vh;
+  width: 100vw;
+  background-color: #555;
+}
+
+header input, header select, header button { 
+  display: inline-block;
+  margin-left: 10px;
+}
+
+header input { 
+  width: 50px; 
+  text-align: right;
+}
+
+.content { 
+  position: relative;
+  display: block;
+  height: 90vh;
+  width: 100vw;
+}
+
+.CommandStack {
+  position: fixed;
+  right: 0;
+  top: 10vh;
+  width: 20vw;
+  height: 90vh;
+  background-color: #ccc;
+}
