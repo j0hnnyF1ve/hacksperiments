@@ -71,8 +71,17 @@ function App() {
     
     let params = {};
     switch(curCommand) {
+      case 'create':
+
+        break;
+      case 'delete':
+        console.log('delete! should be filled in soon');
+        params = { startX, startY, startWidth, startHeight, startRotate }
+        blockMap.delete(curObjName);
+        break;
+
       case 'move':
-        params = { x, y, startX, startWidth }
+        params = { x, y, startX, startY }
         break;
       case 'resize':
         params = { x, y, width, height, startX, startY, startWidth, startHeight }
@@ -80,17 +89,15 @@ function App() {
       case 'rotate':
         params = { rotate, startRotate }
         break;
-      case 'delete':
-        console.log('delete! should be filled in soon');
-        params = { startX, startY, startWidth, startHeight, startRotate }
-        break;
       default: break;
     }
 
-    blockMap.set(curObjName, {
-      ...blockMap.get(curObjName),
-      ...params
-    });
+    if(curCommand !== 'delete') {
+      blockMap.set(curObjName, {
+        ...blockMap.get(curObjName),
+        ...params
+      });
+    }
 
     setBlocks(new Map(blockMap));
 
@@ -101,6 +108,50 @@ function App() {
     });
     setCommandStack([...commandStack]);
     console.log(blockMap, commandStack);
+  };
+
+  const undoHandler = e => {
+    if(commandStack.length === 0) return;
+
+    let { command, target,
+      startX, startY, startWidth, startHeight, 
+      startRotate } =  commandStack.pop();
+    let params = {};
+
+    switch(command) {
+      case 'create':
+
+        break;
+      case 'delete':
+        break;
+
+      case 'move':
+        params = { x: startX, y: startY };
+        break;
+      case 'resize':
+        params = { x: startX, y: startY, width: startWidth, height: startHeight };
+        break;
+      case 'rotate':
+        params = { rotate: startRotate }
+        break;
+  
+      default: break;
+    }
+
+    if(command !== 'delete') {
+      blockMap.set(target, {
+        ...blockMap.get(target),
+        ...params
+      });
+    }
+
+    setCommandStack([...commandStack]);
+    setBlocks(new Map(blockMap));
+  };
+
+  const redoHandler = e => {
+    console.log('Redo coming soon');
+
   };
 
   return (
@@ -119,6 +170,8 @@ function App() {
         <input className={ curCommand !== 'resize' ? 'hide' : '' } defaultValue={height} onChange={changeInputHandler(setHeight)} />
         <input className={ curCommand !== 'rotate' ? 'hide' : '' } defaultValue={rotate}  onChange={changeInputHandler(setRotate)} />
         <button onClick={commandHandler}>Run Command</button>
+        <button onClick={undoHandler}>Undo</button>
+        <button onClick={redoHandler}>Redo</button>
       </header>
       <div className="content" onClick={clickHandler}>
       { 
